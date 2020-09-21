@@ -3,11 +3,11 @@
 
 grammar MiniC;
 
-program : (function | declaration)*;
+prog : (func | decl)*;
 
-function
-    : type identifier '(' ')' '{' statement '}';
-
+func
+    : type Ident '(' (type Ident ',')* (type Ident)? ')' ('{' block* '}' | ';')
+    ;
 type
     :   'void'
     |   'char'
@@ -21,103 +21,51 @@ type
     |   type '*'
     ;
 
-parameterList
-    : (type identifier (',' type identifier)*)?
+block
+    : stmt
+    | decl
     ;
 
-compoundStatement
-    : '{' blockItem* '}'
+decl
+    : type Ident ('[' Integer ']')* ('=' expr)? ';'
     ;
 
-blockItem
-    : statement
-    | declaration
-    ;
-
-statement
-    : 'return' expression ';'
-    | expression? ';'
-    | 'if' '(' expression ')' statement ('else' statement)?
-    | compoundStatement
-    | 'for' '(' expression? ';' expression? ';' expression? ')' statement
-    | 'for' '(' declaration expression? ';' expression? ')' statement
-    | 'while' '(' expression ')' statement
-    | 'do' statement 'while' '(' expression ')' ';'
+stmt
+    : 'return' expr ';'
+    | expr? ';'
+    | '{' block* '}' 
+    | 'if' '(' expr ')' stmt ('else' stmt)
+    | 'while' '(' expr ')' stmt
+    | 'do' stmt 'while' '(' expr ')' ';'
+    | 'for' '(' (decl | expr)? ';' (expr)? ';' (expr)? ')' stmt
     | 'break' ';'
     | 'continue' ';'
+    | ';'
     ;
-declaration
-    : type identifier ('[' Integer ']')* ('=' expression)? ';'
-    ;
-
-expressionList
-    : (expression (',' expression)*)?
-    ;
-
-expression : assignment ;
-assignment
-    : conditional
-    | unary '=' expression
-    ;
-
-conditional
-    : logicalOr
-    | logicalOr '?' expression ':' conditional
-    ;
-
-logicalOr
-    : logicalAnd
-    | logicalOr '||' logicalAnd
-    ;
-
-logicalAnd
-    : equality
-    | logicalAnd '&&' equality
-    ;
-equality
-    : relational
-    | equality ('=='|'!=') relational
-    ;
-relational
-    : additive
-    | relational ('<'|'>'|'<='|'>=') additive
-    ;
-
-additive
-    : multiplicative
-    | additive ('+'|'-') multiplicative
-    ;
-
-multiplicative
-    : unary
-    | multiplicative ('*'|'/'|'%') unary
-    ;
-
-unary
-    : postfix
-    | ('-'|'~'|'!'|'&'|'*') unary
-    | '(' type ')' unary
-    ;
-
-postfix
-    : primary
-    | identifier '(' expressionList ')'
-    | postfix '[' expression ']'
-    ;
-
-primary
-    : Integer
-    | '(' expression ')'
-    | identifier
+expr
+    : Ident '(' (expr ',')* (expr)? ')'
+    | ('!' | '~' | '-') expr
+    | expr ('*' | '/' | '%') expr
+    | expr ('+' | '-') expr
+    | expr ('<' | '<=' | '>' | '>=') expr
+    | expr ('==' | '!=') expr
+    | expr '&&' expr
+    | expr '||' expr
+    | expr '?' expr ':' expr
+    | '(' expr ')'
+    | Ident '=' expr
+    | Ident
+    | Integer
     ;
     
-identifier
+Ident
     :   NO_DIGIT (NO_DIGIT | DIGIT)*;
 
 Integer : '0' | [1-9][0-9]* ; 
 
-
 fragment NO_DIGIT:[a-zA-Z_];
 fragment DIGIT:[0-9];
 
+COMMENT: '/*' .*? '*/' -> skip;
+LINE_COMMENT: '//' ~[\r\n]* -> skip;
 WS : [ \t\n\r]+ -> skip;
