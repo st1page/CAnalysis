@@ -3,44 +3,42 @@
 
 grammar MiniC;
 
+import CommonLex;
+
 prog : (func | decl)*;
 
 func
-    : type Ident '(' (type Ident ',')* (type Ident)? ')' ('{' block* '}' | ';')
+    : type Ident '(' (type Ident ',')* (type Ident)? ')' ('{' blockItem* '}' | ';')
     ;
 type
     :   'void'
     |   'char'
-    |   'short'
+    |   'uchar'
     |   'int'
-    |   'long'
-    |   'float'
-    |   'double'
-    |   'signed'
-    |   'unsigned'
+    |   'uint'
     |   type '*'
     ;
 
-block
+blockItem
     : stmt
     | decl
     ;
 
 decl
-    : type Ident ('[' Integer ']')* ('=' expr)? ';'
+    : type Ident ('[' Integer ']')* ('=' expr)? ';'             # varDef
     ;
 
 stmt
-    : 'return' expr ';'
-    | expr? ';'
-    | '{' block* '}' 
-    | 'if' '(' expr ')' stmt ('else' stmt)
-    | 'while' '(' expr ')' stmt
-    | 'do' stmt 'while' '(' expr ')' ';'
-    | 'for' '(' (decl | expr)? ';' (expr)? ';' (expr)? ')' stmt
-    | 'break' ';'
-    | 'continue' ';'
-    | ';'
+    : 'return' expr ';'                                         # returnStmt
+    | expr? ';'                                                 # singleExpr
+    | '{' blockItem* '}'                                        # block
+    | 'if' '(' expr ')' stmt ('else' stmt)                      # ifStmt
+    | 'while' '(' expr ')' stmt                                 # whileLoop
+    | 'do' stmt 'while' '(' expr ')' ';'                        # doWhile
+    | 'for' '(' (decl | expr)? ';' (expr)? ';' (expr)? ')' stmt # forLoop
+    | 'break' ';'                                               # break
+    | 'continue' ';'                                            # continue
+    | ';'                                                       # nullStmt
     ;
 expr
     : Ident '(' (expr ',')* (expr)? ')'
