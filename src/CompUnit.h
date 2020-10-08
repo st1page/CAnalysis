@@ -37,6 +37,11 @@ struct Arg {
 class Function {
  public:
   std::string name_;
+  enum Stat {
+    unknown,
+    decleared,
+    defined
+  }stat_;
 
   std::vector<Arg> args_;
   std::shared_ptr<Type> ret_type_;
