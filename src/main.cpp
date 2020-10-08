@@ -12,7 +12,7 @@ int main(int argc, const char **argv) {
   CompUnit *unit = new CompUnit((char *)argv[1]);
   std::cout << std::string(unit->file_name_) << endl;
   unit->DetectFuncs();
-  unit->PrintFuncList();
+  unit->PrintFuncCall();
   return 0;
 
 }

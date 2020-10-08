@@ -1,4 +1,4 @@
-// use the defination of decaf-lang, a compiler lab of Tsinghua
+// change from decaf-lang, a compiler lab of Tsinghua
 // https://decaf-lang.github.io/minidecaf-tutorial/
 
 grammar MiniC;
@@ -63,7 +63,7 @@ WS : [ \t\n\r]+ -> skip;
 
 
 
-prog : (func | decl)* EOF;
+prog : func* EOF;
 
 func
     : type Ident '(' (argDecl ',')* argDecl? ')' ('{' blockItem* '}' | ';')
@@ -93,20 +93,20 @@ stmt
     | 'continue' ';'                                            # continue
     | ';'                                                       # nullStmt
     ;
+
 expr
-    : Ident '(' (expr ',')* (expr)? ')'
-    | ('!' | '~' | '-') expr
-    | expr ('*' | '/' | '%') expr
-    | expr ('+' | '-') expr
-    | expr ('<' | '<=' | '>' | '>=') expr
-    | expr ('==' | '!=') expr
-    | expr '&&' expr
-    | expr '||' expr
-    | expr '?' expr ':' expr
-    | '(' expr ')'
-    | Ident '=' expr
-    | Ident
-    | Integer
+    : Ident '(' (expr ',')* (expr)? ')'                         # funcCall
+    | ('!' | '~' | '-') expr                                    # unaryOp
+    | expr ('*' | '/' | '%') expr                               # mulDiv
+    | expr ('+' | '-') expr                                     # addSub
+    | expr ('<' | '<=' | '>' | '>=') expr                       # LessGreat
+    | expr ('==' | '!=') expr                                   # equalNot
+    | expr '&&' expr                                            # logicAnd
+    | expr '||' expr                                            # logicOr
+    | '(' expr ')'                                              # atomParen 
+    | Ident '=' expr                                            # assign
+    | Ident                                                     # sigIdent
+    | Integer                                                   # sigInt
     ;
 
 type

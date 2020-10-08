@@ -78,3 +78,15 @@ void CompUnit::PrintFuncList() {
     std::cout << it.second->ToString() << std::endl;
   }
 }
+void CompUnit::PrintFuncCall() {
+  std::cout << "functions of compile unit " << file_name_ << std::endl;
+  for (auto const &it : func_table_) {
+    std::cout << it.second->ToString() << std::endl;
+    std::cout<< "calling:" <<std::endl;
+    for(auto const &func : it.second->call_funcs_) {
+      std::cout << "    " << func->ToString() << std::endl;
+    }
+  }
+
+}
+

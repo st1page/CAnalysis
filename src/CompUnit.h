@@ -48,7 +48,7 @@ class Function {
 
   MiniCParser::FuncContext* def_ctx_;
 
-  std::vector<Function*> called_funcs_;
+  std::vector<Function*> call_funcs_;
   std::unordered_map<std::string, std::shared_ptr<Type>> symbol_table_;
 
   std::string ToString();
@@ -75,4 +75,6 @@ class CompUnit {
   void Analysis();
 
   void PrintFuncList();
+  
+  void PrintFuncCall();
 };
