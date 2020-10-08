@@ -3,22 +3,75 @@
 
 grammar MiniC;
 
-import CommonLex;
+// keyword
+Void : 'void';
+Int : 'int';
+UInt : 'uint';
+Char : 'char';
+UChar : 'uchar';
+Return : 'return';
+If : 'if';
+Else : 'else';
+For : 'for';
+While : 'while';
+Do : 'do';
+Break : 'break';
+Continue : 'continue'; 
 
-prog : (func | decl)*;
+// operator
+Lparen : '(' ;
+Rparen : ')' ;
+Lbrkt : '[' ;
+Rbrkt : ']' ;
+Lbrace : '{' ;
+Rbrace : '}' ;
+Comma : ',' ;
+Semicolon : ';';
+Question : '?';
+Colon : ':';
+
+Minus : '-';
+Exclamation : '!';
+Tilde : '~';
+Addition : '+';
+Multiplication : '*';
+AND : '&';
+Division : '/';
+Modulo : '%';
+LAND : '&&';
+LOR : '||';
+EQ : '==';
+NEQ : '!=';
+LT : '<';
+LE : '<=';
+GT : '>';
+GE : '>=';
+
+
+// integer, identifier
+Ident
+    :   NO_DIGIT (NO_DIGIT | DIGIT)*;
+
+Integer : '0' | [1-9][0-9]* ; 
+
+fragment NO_DIGIT:[a-zA-Z_];
+fragment DIGIT:[0-9];
+
+COMMENT: '/*' .*? '*/' -> skip;
+LINE_COMMENT: '//' ~[\r\n]* -> skip;
+WS : [ \t\n\r]+ -> skip;
+
+
+
+prog : (func | decl)* EOF;
 
 func
-    : type Ident '(' (type Ident ',')* (type Ident)? ')' ('{' blockItem* '}' | ';')
-    ;
-type
-    :   'void'
-    |   'char'
-    |   'uchar'
-    |   'int'
-    |   'uint'
-    |   type '*'
+    : type Ident '(' (argDecl ',')* argDecl? ')' ('{' blockItem* '}' | ';')
     ;
 
+argDecl 
+    : type Ident ('[' Integer ']')*
+    ;
 blockItem
     : stmt
     | decl
@@ -55,15 +108,13 @@ expr
     | Ident
     | Integer
     ;
-    
-Ident
-    :   NO_DIGIT (NO_DIGIT | DIGIT)*;
 
-Integer : '0' | [1-9][0-9]* ; 
+type
+    :   'void'   # voidType
+    |   'char'   # charType
+    |   'uchar'  # uCharType
+    |   'int'    # intType
+    |   'uint'   # uIntType
+    |   type ('*')+ # pointerType
+    ;
 
-fragment NO_DIGIT:[a-zA-Z_];
-fragment DIGIT:[0-9];
-
-COMMENT: '/*' .*? '*/' -> skip;
-LINE_COMMENT: '//' ~[\r\n]* -> skip;
-WS : [ \t\n\r]+ -> skip;
