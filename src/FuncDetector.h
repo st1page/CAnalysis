@@ -2,7 +2,9 @@
 
 #include "CompUnit.h"
 #include "MiniCBaseVisitor.h"
-class FuncDectector : public MiniCBaseVisitor {
+#include "MiniCTypeVisitor.h"
+
+class FuncDectector : public MiniCTypeVisitor {
  private:
   CompUnit *comp_unit_;
   Function *cur_func_;
@@ -29,8 +31,8 @@ class FuncDectector : public MiniCBaseVisitor {
 
  public:
   FuncDectector(CompUnit *comp_unit)
-      : comp_unit_(comp_unit), MiniCBaseVisitor() {}
-  antlrcpp::Any visitFunc(MiniCParser::FuncContext *ctx) override {
+      : comp_unit_(comp_unit), MiniCTypeVisitor() {}
+  virtual antlrcpp::Any visitFunc(MiniCParser::FuncContext *ctx) override {
     std::string func_name = ctx->Ident()->getText();
     auto res = comp_unit_->func_table_.emplace(func_name,
                                                std::make_unique<Function>());
@@ -73,7 +75,7 @@ class FuncDectector : public MiniCBaseVisitor {
   }
 
 
-  antlrcpp::Any visitArgDecl(MiniCParser::ArgDeclContext *ctx) override {
+  virtual antlrcpp::Any visitArgDecl(MiniCParser::ArgDeclContext *ctx) override {
     std::string arg_name = ctx->Ident()->getText();
 
     std::shared_ptr<Type> type = visit(ctx->type());
@@ -92,53 +94,5 @@ class FuncDectector : public MiniCBaseVisitor {
       }
     }
     return Arg(arg_name, type);
-  }
-  antlrcpp::Any visitVoidType(MiniCParser::VoidTypeContext *ctx) override {
-    std::shared_ptr<Type> type = std::make_shared<Type>();
-    type->name_ = "void";
-    type->is_void_ = true;
-    return type;
-  }
-
-  antlrcpp::Any visitCharType(MiniCParser::CharTypeContext *ctx) override {
-    std::shared_ptr<Type> type = std::make_shared<Type>();
-    type->name_ = "char";
-    type->is_int_ = true;
-    type->int_is_signed_ = true;
-    type->int_length_ = 8;
-    return type;
-  }
-  antlrcpp::Any visitUCharType(MiniCParser::UCharTypeContext *ctx) override {
-    std::shared_ptr<Type> type = std::make_shared<Type>();
-    type->name_ = "uchar";
-    type->is_int_ = true;
-    type->int_is_signed_ = false;
-    type->int_length_ = 8;
-    return type;
-  }
-  antlrcpp::Any visitIntType(MiniCParser::IntTypeContext *ctx) override {
-    std::shared_ptr<Type> type = std::make_shared<Type>();
-    type->name_ = "int";
-    type->is_int_ = true;
-    type->int_is_signed_ = true;
-    type->int_length_ = 32;
-    return type;
-  }
-
-  antlrcpp::Any visitUIntType(MiniCParser::UIntTypeContext *ctx) override {
-    std::shared_ptr<Type> type = std::make_shared<Type>();
-    type->name_ = "uint";
-    type->is_int_ = true;
-    type->int_is_signed_ = false;
-    type->int_length_ = 32;
-    return type;
-  }
-
-  antlrcpp::Any visitPointerType(
-      MiniCParser::PointerTypeContext *ctx) override {
-    std::shared_ptr<Type> type = visit(ctx->type());
-    type->is_ptr_ = true;
-    type->ptr_arr_lens_.resize(ctx->Multiplication().size(), 0);
-    return type;
   }
 };
