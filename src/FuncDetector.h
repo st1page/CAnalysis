@@ -13,9 +13,9 @@ class FuncDectector : public MiniCTypeVisitor {
     // TODO(st1page): check if the args is same when the func has been decl.
     func->def_ctx_ = ctx;
     func->ret_type_ = visit(ctx->type());
-    func->args_.resize(ctx->argDecl().size());
-    for (auto i = 0; i < ctx->argDecl().size(); ++i) {
-      func->args_[i] = visit(ctx->argDecl(i));
+    func->args_.resize(ctx->varDecl().size());
+    for (auto i = 0; i < ctx->varDecl().size(); ++i) {
+      func->args_[i] = visit(ctx->varDecl(i));
       auto res = func->symbol_table_.emplace(func->args_[i].name_,
                                              func->args_[i].type_);
       if (func->stat_ == Function::Stat::unknown && !res.second) {
@@ -74,25 +74,4 @@ class FuncDectector : public MiniCTypeVisitor {
     return visitChildren(ctx);
   }
 
-
-  virtual antlrcpp::Any visitArgDecl(MiniCParser::ArgDeclContext *ctx) override {
-    std::string arg_name = ctx->Ident()->getText();
-
-    std::shared_ptr<Type> type = visit(ctx->type());
-    uint32_t arr_dim = ctx->Integer().size();
-    uint32_t ptr_dim = type->ptr_arr_lens_.size();
-
-    if (arr_dim) {
-      type->is_ptr_ = true;
-      type->ptr_arr_lens_.resize(arr_dim + ptr_dim);
-      for (int i = 0; i < arr_dim; i++) {
-        type->ptr_arr_lens_[arr_dim - i - 1] =
-            std::stoi(ctx->Integer()[i]->getText());
-      }
-      for (int i = 0; i < ptr_dim; i++) {
-        type->ptr_arr_lens_[arr_dim + i] = 0;
-      }
-    }
-    return Arg(arg_name, type);
-  }
 };

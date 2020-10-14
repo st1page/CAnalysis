@@ -5,7 +5,7 @@
 
 class MiniCTypeVisitor : public MiniCBaseVisitor {
  public:
-  virtual antlrcpp::Any visitArgDecl(MiniCParser::ArgDeclContext *ctx) override {
+  virtual antlrcpp::Any visitVarDecl(MiniCParser::VarDeclContext *ctx) override {
     std::string arg_name = ctx->Ident()->getText();
 
     std::shared_ptr<Type> type = visit(ctx->type());
@@ -23,7 +23,7 @@ class MiniCTypeVisitor : public MiniCBaseVisitor {
         type->ptr_arr_lens_[arr_dim + i] = 0;
       }
     }
-    return Arg(arg_name, type);
+    return Var(arg_name, type);
   }
   virtual antlrcpp::Any visitVoidType(MiniCParser::VoidTypeContext *ctx) override {
     std::shared_ptr<Type> type = std::make_shared<Type>();

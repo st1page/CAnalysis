@@ -66,29 +66,25 @@ WS : [ \t\n\r]+ -> skip;
 prog : func* EOF;
 
 func
-    : type Ident '(' (argDecl ',')* argDecl? ')' ('{' blockItem* '}' | ';')
+    : type Ident '(' (varDecl ',')* varDecl? ')' ('{' blockItem* '}' | ';')
     ;
 
-argDecl 
+varDecl
     : type Ident ('[' Integer ']')*
     ;
 blockItem
     : stmt
-    | decl
-    ;
-
-decl
-    : type Ident ('[' Integer ']')* ('=' expr)? ';'             # varDef
     ;
 
 stmt
-    : 'return' expr ';'                                         # returnStmt
+    : varDecl ('=' expr)? ';'                                   # varDef
+    | 'return' expr ';'                                         # returnStmt
     | expr? ';'                                                 # singleExpr
     | '{' blockItem* '}'                                        # block
     | 'if' '(' expr ')' stmt ('else' stmt)                      # ifStmt
     | 'while' '(' expr ')' stmt                                 # whileLoop
     | 'do' stmt 'while' '(' expr ')' ';'                        # doWhile
-    | 'for' '(' (decl | expr)? ';' (expr)? ';' (expr)? ')' stmt # forLoop
+    | 'for' '(' (varDecl | expr)? ';' (expr)? ';' (expr)? ')'   # forLoop
     | 'break' ';'                                               # break
     | 'continue' ';'                                            # continue
     | ';'                                                       # nullStmt

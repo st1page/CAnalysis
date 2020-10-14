@@ -26,11 +26,11 @@ struct Type {
   std::string ToString(std::string arg_name = "");
 };
 
-struct Arg {
+struct Var {
   std::shared_ptr<Type> type_;
   std::string name_;
-  Arg(): name_("NoneArg") {}
-  Arg(std::string name, std::shared_ptr<Type> type)
+  Var(): name_("NoneVar") {}
+  Var(std::string name, std::shared_ptr<Type> type)
       : type_(type), name_(name) {}
 };
 
@@ -43,7 +43,7 @@ class Function {
     defined
   }stat_;
 
-  std::vector<Arg> args_;
+  std::vector<Var> args_;
   std::shared_ptr<Type> ret_type_;
 
   MiniCParser::FuncContext* def_ctx_;
