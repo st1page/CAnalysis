@@ -29,19 +29,42 @@ struct Type {
 struct Var {
   std::shared_ptr<Type> type_;
   std::string name_;
-  Var(): name_("NoneVar") {}
+  Var() : name_("NoneVar") {}
   Var(std::string name, std::shared_ptr<Type> type)
       : type_(type), name_(name) {}
+};
+
+class Stmt {
+public:
+  enum Cate {
+    VarDef,
+    Return,
+    SingleExpr,
+    BlockStart,
+    BlockEnd,
+    If,
+    Else,
+    While,
+    DoWhile,
+    For,
+    Break,
+    Continue,
+  };
+
+private:
+  static inline std::string Cate2String(const enum Cate cate);
+  
+public:
+  MiniCParser::StmtContext* ctx_;
+  Cate cate_;
+  Stmt(Cate cate, MiniCParser::StmtContext* ctx) : cate_(cate), ctx_(ctx) {}
+  std::string CateString() const { return Cate2String(cate_); }
 };
 
 class Function {
  public:
   std::string name_;
-  enum Stat {
-    unknown,
-    decleared,
-    defined
-  }stat_;
+  enum Stat { unknown, decleared, defined } stat_;
 
   std::vector<Var> args_;
   std::shared_ptr<Type> ret_type_;
@@ -50,6 +73,8 @@ class Function {
 
   std::vector<Function*> call_funcs_;
   std::unordered_map<std::string, std::shared_ptr<Type>> symbol_table_;
+
+  std::vector<Stmt> stmts_;
 
   std::string ToString();
 };
@@ -69,12 +94,12 @@ class CompUnit {
   CompUnit(char* file_name);
   ~CompUnit();
   // detect all functions & make the func table
-  void DetectFuncs();
+  void PreAnalyze();
 
   // gen the call graph & symbol tables
   void Analysis();
 
   void PrintFuncList();
-  
+
   void PrintFuncCall();
 };

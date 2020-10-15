@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "FuncDetector.h"
+#include "PreAnalyzer.h"
 #include "MiniCLexer.h"
 #include "MiniCParser.h"
 #include "MiniCVisitor.h"
@@ -26,6 +26,30 @@ std::string Type::ToString(std::string arg_name) {
     return name_ + " " + arg_name;
   }
 }
+
+#define ENUM_TYPE_CASE(x) \
+  case x:                 \
+    return std::string(#x);
+
+  std::string Stmt::Cate2String(const enum Cate cate) {
+    switch (cate) {
+      ENUM_TYPE_CASE(VarDef)
+      ENUM_TYPE_CASE(Return)
+      ENUM_TYPE_CASE(SingleExpr)
+      ENUM_TYPE_CASE(BlockStart)
+      ENUM_TYPE_CASE(BlockEnd)
+      ENUM_TYPE_CASE(If)
+      ENUM_TYPE_CASE(Else)
+      ENUM_TYPE_CASE(While)
+      ENUM_TYPE_CASE(DoWhile)
+      ENUM_TYPE_CASE(For)
+      ENUM_TYPE_CASE(Break)
+      ENUM_TYPE_CASE(Continue)
+    }
+    return "Unsupported Cate";
+  }
+
+#undef ENUM_TYPE_CASE
 
 std::string Function::ToString() {
   std::string ret = "";
@@ -64,9 +88,9 @@ CompUnit::~CompUnit() {
 }
 
 // detect all functions & make the func table
-void CompUnit::DetectFuncs() {
-  FuncDectector func_dectector(this);
-  func_dectector.visitProg(parser_->prog());
+void CompUnit::PreAnalyze() {
+  PreAnalyzer pre_analyzer(this);
+  pre_analyzer.visitProg(parser_->prog());
 }
 
 // gen the call graph & symbol tables
@@ -86,6 +110,14 @@ void CompUnit::PrintFuncCall() {
     for(auto const &func : it.second->call_funcs_) {
       std::cout << "    " << func->ToString() << std::endl;
     }
+    
+    std::cout<< "stmt:" <<std::endl;
+    for(auto const &stmt : it.second->stmts_) {
+      std::cout << "    " << stmt.CateString() << std::endl;
+
+    }
+
+
   }
 
 }

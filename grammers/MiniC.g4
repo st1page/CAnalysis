@@ -81,7 +81,7 @@ stmt
     | 'return' expr ';'                                         # returnStmt
     | expr? ';'                                                 # singleExpr
     | '{' blockItem* '}'                                        # block
-    | 'if' '(' expr ')' stmt ('else' stmt)                      # ifStmt
+    | 'if' '(' expr ')' stmt ('else' stmt)?                     # ifStmt
     | 'while' '(' expr ')' stmt                                 # whileLoop
     | 'do' stmt 'while' '(' expr ')' ';'                        # doWhile
     | 'for' '(' (varDecl | expr)? ';' (expr)? ';' (expr)? ')'   # forLoop
