@@ -3,10 +3,10 @@
 #include <fstream>
 #include <iostream>
 
-#include "PreAnalyzer.h"
 #include "MiniCLexer.h"
 #include "MiniCParser.h"
 #include "MiniCVisitor.h"
+#include "PreAnalyzer.h"
 
 std::string Type::ToString(std::string arg_name) {
   if (is_ptr_) {
@@ -31,25 +31,55 @@ std::string Type::ToString(std::string arg_name) {
   case x:                 \
     return std::string(#x);
 
-  std::string Stmt::Cate2String(const enum Cate cate) {
-    switch (cate) {
-      ENUM_TYPE_CASE(VarDef)
-      ENUM_TYPE_CASE(Return)
-      ENUM_TYPE_CASE(SingleExpr)
-      ENUM_TYPE_CASE(BlockStart)
-      ENUM_TYPE_CASE(BlockEnd)
-      ENUM_TYPE_CASE(If)
-      ENUM_TYPE_CASE(Else)
-      ENUM_TYPE_CASE(While)
-      ENUM_TYPE_CASE(DoWhile)
-      ENUM_TYPE_CASE(For)
-      ENUM_TYPE_CASE(Break)
-      ENUM_TYPE_CASE(Continue)
-    }
-    return "Unsupported Cate";
+std::string Stmt::Cate2String(const enum Cate cate) {
+  switch (cate) {
+    ENUM_TYPE_CASE(VarDef)
+    ENUM_TYPE_CASE(Return)
+    ENUM_TYPE_CASE(SingleExpr)
+    ENUM_TYPE_CASE(BlockStart)
+    ENUM_TYPE_CASE(BlockEnd)
+    ENUM_TYPE_CASE(If)
+    ENUM_TYPE_CASE(Else)
+    ENUM_TYPE_CASE(While)
+    ENUM_TYPE_CASE(DoWhile)
+    ENUM_TYPE_CASE(For)
+    ENUM_TYPE_CASE(Break)
+    ENUM_TYPE_CASE(Continue)
   }
+  return "Unsupported Cate";
+}
 
 #undef ENUM_TYPE_CASE
+
+bool Stmt::Equal(const Stmt &other) {
+  if (cate_ != other.cate_) return false;
+  else return true;
+//  TODO(st1page): compare different expr   
+/*  switch (cate_) {
+    case VartrueDef:
+      break;
+    case Return:
+      break;
+    case SingleExpr:
+      break;    
+    case If:
+      break;
+    case While:
+      break;
+    case DoWhile:
+      break;
+    case For:
+      break;
+    case BlockStart:
+    case BlockEnd:
+    case Else:
+    case Break:
+    case Continue:
+      return ;
+  }
+  return false;
+*/
+}
 
 std::string Function::ToString() {
   std::string ret = "";
@@ -93,9 +123,6 @@ void CompUnit::PreAnalyze() {
   pre_analyzer.visitProg(parser_->prog());
 }
 
-// gen the call graph & symbol tables
-void CompUnit::Analysis() {}
-
 void CompUnit::PrintFuncList() {
   std::cout << "functions of compile unit " << file_name_ << std::endl;
   for (auto const &it : func_table_) {
@@ -106,19 +133,9 @@ void CompUnit::PrintFuncCall() {
   std::cout << "functions of compile unit " << file_name_ << std::endl;
   for (auto const &it : func_table_) {
     std::cout << it.second->ToString() << std::endl;
-    std::cout<< "calling:" <<std::endl;
-    for(auto const &func : it.second->call_funcs_) {
+    std::cout << "calling:" << std::endl;
+    for (auto const &func : it.second->call_funcs_) {
       std::cout << "    " << func->ToString() << std::endl;
     }
-    
-    std::cout<< "stmt:" <<std::endl;
-    for(auto const &stmt : it.second->stmts_) {
-      std::cout << "    " << stmt.CateString() << std::endl;
-
-    }
-
-
   }
-
 }
-

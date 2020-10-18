@@ -78,7 +78,7 @@ blockItem
 
 stmt
     : varDecl ('=' expr)? ';'                                   # varDef
-    | 'return' expr ';'                                         # returnStmt
+    | 'return' expr? ';'                                        # returnStmt
     | expr? ';'                                                 # singleExpr
     | '{' blockItem* '}'                                        # block
     | 'if' '(' expr ')' stmt ('else' stmt)?                     # ifStmt
@@ -92,6 +92,7 @@ stmt
 
 expr
     : Ident '(' (expr ',')* (expr)? ')'                         # funcCall
+    | expr ('[' expr ']')+                                      # subscript
     | ('!' | '~' | '-') expr                                    # unaryOp
     | expr ('*' | '/' | '%') expr                               # mulDiv
     | expr ('+' | '-') expr                                     # addSub
@@ -100,7 +101,7 @@ expr
     | expr '&&' expr                                            # logicAnd
     | expr '||' expr                                            # logicOr
     | '(' expr ')'                                              # atomParen 
-    | Ident '=' expr                                            # assign
+    | expr '=' expr                                             # assign
     | Ident                                                     # sigIdent
     | Integer                                                   # sigInt
     ;

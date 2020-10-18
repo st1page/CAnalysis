@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <vector>
-
+#include <iostream>
 class LCS {
  public:
   LCS(uint32_t len1, uint32_t len2) : len1_(len1), len2_(len2) {
@@ -54,13 +54,13 @@ class LCS {
 
  private:
   uint32_t dim_redu(uint32_t x, uint32_t y) { return x * len2_ + y; }
-  void get_ans(uint32_t x, uint32_t y) {
+  void get_ans(int32_t x, int32_t y) {
     if (x < 0 || y < 0) return;
     if (equal_[dim_redu(x, y)]) {
       get_ans(x - 1, y - 1);
       ans_.push_back({x, y});
     } else {
-      if (x && dp_[dim_redu(x - 1, y)] == dp_[dim_redu(x, y)])
+      if (x>0 && dp_[dim_redu(x - 1, y)] == dp_[dim_redu(x, y)])
         get_ans(x - 1, y);
       else
         get_ans(x, y - 1);

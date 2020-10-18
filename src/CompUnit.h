@@ -52,13 +52,14 @@ public:
   };
 
 private:
-  static inline std::string Cate2String(const enum Cate cate);
-  
+  static std::string Cate2String(const enum Cate cate);
+
 public:
   MiniCParser::StmtContext* ctx_;
   Cate cate_;
   Stmt(Cate cate, MiniCParser::StmtContext* ctx) : cate_(cate), ctx_(ctx) {}
   std::string CateString() const { return Cate2String(cate_); }
+  bool Equal(const Stmt &other);
 };
 
 class Function {
@@ -95,9 +96,6 @@ class CompUnit {
   ~CompUnit();
   // detect all functions & make the func table
   void PreAnalyze();
-
-  // gen the call graph & symbol tables
-  void Analysis();
 
   void PrintFuncList();
 
