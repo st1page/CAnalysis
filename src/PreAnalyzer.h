@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CompUnit.h"
-#include "MiniCBaseVisitor.h"
 #include "MiniCTypeVisitor.h"
 
 class PreAnalyzer : public MiniCTypeVisitor {

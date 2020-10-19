@@ -104,6 +104,7 @@ class CompUnit {
   // detect all functions & make the func table
   void PreAnalyze();
 
+  void SecAnalyze(const char *func_list_file);
   void PrintFuncList();
 
   void PrintFuncCall();

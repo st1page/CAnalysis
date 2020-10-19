@@ -63,7 +63,7 @@ WS : [ \t\n\r]+ -> skip;
 
 
 
-prog : func* EOF;
+prog : func*;
 
 func
     : type Ident '(' (varDecl ',')* varDecl? ')' ('{' blockItem* '}' | ';')

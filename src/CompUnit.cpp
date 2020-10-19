@@ -7,6 +7,7 @@
 #include "MiniCParser.h"
 #include "MiniCVisitor.h"
 #include "PreAnalyzer.h"
+#include "SecAnalyzer.h"
 
 std::string Type::ToString(std::string arg_name) {
   if (is_ptr_) {
@@ -131,10 +132,9 @@ Function *CompUnit::AddFunc(std::string name) {
 void CompUnit::PreAnalyze() {
   PreAnalyzer pre_analyzer(this);
   pre_analyzer.visitProg(parser_->prog());
-  if (func_table_.find("main") == func_table_.end()) {
-    std::cout << "function main is not defined\n";
-    exit(1);
-  }
+}
+void CompUnit::SecAnalyze(const char *func_list_file) {
+  SecAnalyzer pre_analyzer(this, func_list_file);
 }
 
 void CompUnit::PrintFuncList() {

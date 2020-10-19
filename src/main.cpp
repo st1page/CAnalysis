@@ -10,10 +10,11 @@ using namespace std;
 int g_argc;
 const char **g_argv;
 int cmd_diff(cli::Parser &parser) {
-  bool token_based = parser.flag("tokenbased")
-      .alias("token")
-      .description("if is based on token diff, or use graph diff")
-      .getValue();
+  bool token_based =
+      parser.flag("tokenbased")
+          .alias("token")
+          .description("if is based on token diff, or use graph diff")
+          .getValue();
 
   parser.getRemainingArguments(g_argc, g_argv);
   if (g_argc != 3) {
@@ -25,14 +26,28 @@ int cmd_diff(cli::Parser &parser) {
   unit1->PreAnalyze();
   unit2->PreAnalyze();
   CodeDiffer differ;
-  if(token_based) {
+  if (token_based) {
     differ.UnitLCSDiff(unit1, unit2);
   } else {
     differ.UnitCallGraphDiff(unit1, unit2);
   }
-  
 }
-int cmd_audit(cli::Parser &parser) {}
+int cmd_audit(cli::Parser &parser) {
+  const char *func_list_file =
+      parser.option("flist")
+          .alias("l")
+          .description("the json file of the functions list")
+          .required()
+          .getValue();
+  parser.getRemainingArguments(g_argc, g_argv);
+  if (g_argc != 2) {
+    cout << "please input diff <file>" << endl;
+    return EXIT_FAILURE;
+  }
+  CompUnit *unit1 = new CompUnit((char *)g_argv[1]);
+  unit1->SecAnalyze(func_list_file);
+
+}
 void cmd_register(cli::Parser &parser) {
   parser.help() <<
       R"(CAnalysis a C language static analysis tool
@@ -54,7 +69,9 @@ void cmd_register(cli::Parser &parser) {
     Description: static analysis security problems
     Usage:       audit [args] fileNname
     Usage:       audit [args] DirectoryNames...)")
-      .execute(cmd_diff);
+      .execute(cmd_audit);
+  parser.option("flist").alias("l").description(
+      "the json file of the functions list");
 }
 int main(int argc, const char **argv) {
   cli::Parser parser(argc, argv);

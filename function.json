@@ -1,0 +1,32 @@
+{
+  "blacklisk":[
+    {
+      "name": "sspringf",
+      "description": "C string format function has security problem"
+    },
+    {
+      "name": "printf",
+      "description": "C string format function has security problem"
+    },
+    {
+      "name": "strstr",
+      "description": "C style string function has security problem"
+    }
+  ],
+  "memalloc":[
+    {
+      "name":"malloc",
+      "numArgPlace":1,
+      "sizArgPlace":2
+    }
+  ],
+  "memuse":[
+    {
+      "name":"memncpy",
+      "ptrArgPlace":1,
+      "sizArgPlace":3
+    }
+  ]
+
+
+}
