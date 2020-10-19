@@ -35,7 +35,7 @@ struct Var {
 };
 
 class Stmt {
-public:
+ public:
   enum Cate {
     VarDef,
     Return,
@@ -51,19 +51,21 @@ public:
     Continue,
   };
 
-private:
+ private:
   static std::string Cate2String(const enum Cate cate);
 
-public:
+ public:
   MiniCParser::StmtContext* ctx_;
   Cate cate_;
   Stmt(Cate cate, MiniCParser::StmtContext* ctx) : cate_(cate), ctx_(ctx) {}
   std::string CateString() const { return Cate2String(cate_); }
-  bool Equal(const Stmt &other);
+  bool Equal(const Stmt& other);
 };
 
 class Function {
  public:
+  uint32_t id_;
+
   std::string name_;
   enum Stat { unknown, decleared, defined } stat_;
 
@@ -89,11 +91,16 @@ class CompUnit {
 
   MiniCParser* parser_;
 
+  uint32_t func_num_ = 0;
+
   std::unordered_map<std::string, std::unique_ptr<Function>> func_table_;
   std::unordered_map<std::string, std::shared_ptr<Type>> global_symbol_table_;
 
   CompUnit(char* file_name);
   ~CompUnit();
+
+  Function* AddFunc(std::string name);
+
   // detect all functions & make the func table
   void PreAnalyze();
 

@@ -52,33 +52,35 @@ std::string Stmt::Cate2String(const enum Cate cate) {
 #undef ENUM_TYPE_CASE
 
 bool Stmt::Equal(const Stmt &other) {
-  if (cate_ != other.cate_) return false;
-  else return true;
-//  TODO(st1page): compare different expr   
-/*  switch (cate_) {
-    case VartrueDef:
-      break;
-    case Return:
-      break;
-    case SingleExpr:
-      break;    
-    case If:
-      break;
-    case While:
-      break;
-    case DoWhile:
-      break;
-    case For:
-      break;
-    case BlockStart:
-    case BlockEnd:
-    case Else:
-    case Break:
-    case Continue:
-      return ;
-  }
-  return false;
-*/
+  if (cate_ != other.cate_)
+    return false;
+  else
+    return true;
+  //  TODO(st1page): compare different expr
+  /*  switch (cate_) {
+      case VartrueDef:
+        break;
+      case Return:
+        break;
+      case SingleExpr:
+        break;
+      case If:
+        break;
+      case While:
+        break;
+      case DoWhile:
+        break;
+      case For:
+        break;
+      case BlockStart:
+      case BlockEnd:
+      case Else:
+      case Break:
+      case Continue:
+        return ;
+    }
+    return false;
+  */
 }
 
 std::string Function::ToString() {
@@ -116,11 +118,23 @@ CompUnit::~CompUnit() {
   if (tokens_ != nullptr) delete tokens_;
   if (parser_ != nullptr) delete parser_;
 }
-
+Function *CompUnit::AddFunc(std::string name) {
+  auto res = func_table_.emplace(name, std::make_unique<Function>());
+  Function *func = res.first->second.get();
+  if (res.second) {
+    func->name_ = name;
+    func->id_ = func_num_++;
+  }
+  return func;
+}
 // detect all functions & make the func table
 void CompUnit::PreAnalyze() {
   PreAnalyzer pre_analyzer(this);
   pre_analyzer.visitProg(parser_->prog());
+  if (func_table_.find("main") == func_table_.end()) {
+    std::cout << "function main is not defined\n";
+    exit(1);
+  }
 }
 
 void CompUnit::PrintFuncList() {

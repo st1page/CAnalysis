@@ -24,10 +24,7 @@ Function *PreAnalyzer::ParseFuncDecl(MiniCParser::FuncContext *ctx,
 
 antlrcpp::Any PreAnalyzer::visitFunc(MiniCParser::FuncContext *ctx) {
   std::string func_name = ctx->Ident()->getText();
-  auto res =
-      comp_unit_->func_table_.emplace(func_name, std::make_unique<Function>());
-  Function *func = res.first->second.get();
-  func->name_ = func_name;
+  Function *func = comp_unit_->AddFunc(func_name);
 
   if (ctx->Semicolon()) {
     // function declearation
